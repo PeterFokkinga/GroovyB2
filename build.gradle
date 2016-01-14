@@ -1,0 +1,30 @@
+apply plugin: 'groovy'
+apply plugin: "java"
+apply plugin: "war"
+
+sourceCompatibility = 1.7
+
+if (!project.hasProperty("learnVersion")) {
+    ext.learnVersion = "9.1.201410.160373"
+}
+
+repositories {
+  mavenCentral()
+
+  maven {
+       name "public"
+                        url "https://nexus.cit.rug.nl/content/groups/public"
+          }
+}
+
+dependencies {
+  compile localGroovy()
+  compile 'org.codehaus.groovy.modules.http-builder:http-builder:0.7.1'
+  providedCompile "blackboard.platform:bb-platform:${learnVersion}",
+      "blackboard.platform:bb-taglibs:${learnVersion}"
+
+  providedCompile "javax.servlet:javax.servlet-api:3.0.1",
+          "javax.servlet.jsp:jsp-api:2.2",
+          'taglibs:standard:1.1.2'
+
+}

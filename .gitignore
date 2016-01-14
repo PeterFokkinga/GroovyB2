@@ -1,0 +1,8 @@
+.idea
+*.swp
+*.iml
+.gradle/
+build/
+classes/
+coverage-error.log
+.DS_Store

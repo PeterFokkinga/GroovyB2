@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<manifest>
+  <plugin>
+    <name value="GroovyB2"/>
+    <handle value="GroovyB2"/>
+    <version value="0.0.1"/>
+    <webapp-type value="javaext"/>
+    <default-locale value="en_US"/>
+
+    <vendor>
+      <id value="PRF"/>
+      <name value="Peter Fokkinga"/>
+    </vendor>
+
+    <http-actions>
+      <!--
+         groovlets don't work:
+         java.security.AccessControlException: access denied ("groovy.security.GroovyCodeSourcePermission" "/groovy/script")
+          even with the permissions below
+        -->
+      <!--<config value="hello.groovy"/>-->
+      <config value="nu.jsp"/>
+    </http-actions>
+
+    <requires>
+      <bbversion value="9.1.201410"/>
+    </requires>
+
+    <permissions>
+      <!-- required for  groovy -->
+      <permission type="runtime" name="createClassLoader"/>
+      <permission type="runtime" name="getProtectionDomain"/>
+      <!-- even with these permissions groovlets still give AccessControlException -->
+      <permission type="groovy.security.GroovyCodeSourcePermission" name="/groovy/script" actions="*"/>
+      <permission type="groovy.security.GroovyCodeSourcePermission" name="/groovy/shell" actions="*"/>
+      <permission type="java.io.FilePermission" name="/groovy/script" actions="read"/>
+      <permission type="java.io.FilePermission" name="/groovy/shell" actions="read"/>
+
+      <!-- the following permissions may or may not be required (copy/paste from existing b2) -->
+
+      <permission type="attribute" name="user.authinfo" actions="get"/>
+      <permission type="attribute" name="user.personalinfo" actions="get"/>
+
+      <permission type="java.lang.RuntimePermission" name="setContextClassLoader"/>
+      <permission type="java.lang.reflect.ReflectPermission" name="*" actions="suppressAccessChecks"/>
+
+      <!-- prevent permission errors in other building blocks which implement CxComponent -->
+      <permission type="persist" name="content" actions="*"/>
+
+
+      <!-- prevent warnings when a building block starts (2014.10 problem) -->
+      <permission type="java.util.PropertyPermission"
+                  name="org.apache.juli.ClassLoaderLogManager.debug"
+                  action="read"/>
+
+      <!-- tab and layoutfamily permissions are required when dealing with groups -->
+      <permission type="persist" name="tab" actions="persist, read, create, modify, delete"/>
+      <permission type="persist" name="layoutfamily" actions="persist, read, create, modify, delete"/>
+
+      <!-- necessary for database access and usual connection stuff, also for sending e-mails! -->
+      <!-- listen permission is necessary for the Merlia SQL Server driver when used with named instances -->
+      <permission type="socket" name="*" actions="connect,listen,resolve"/>
+
+      <!-- necessary to install DupableSSLSocketFactory.TRUST_ALL_CERTIFICATES -->
+      <permission type="runtime" name="setFactory" actions=""/>
+
+      <!--
+        crude, but the only way to make sure the building block works when
+        the content directory is on a separate volume; you may try removing
+        this line and see if the block still works (check the logfiles!)
+        -->
+      <permission type="java.io.FilePermission" name="&lt;&lt;ALL FILES&gt;&gt;" actions="read,write,delete"/>
+
+      <!-- necessary for nl.rug.lib.www.Log4jInitializationListener -->
+      <permission type="java.util.PropertyPermission" name="rug.log4j.outputdir" actions="write"/>
+      <permission type="java.io.FilePermission" name="../../../logs/tomcat/-" actions="write"/>
+      <permission type="java.util.logging.LoggingPermission" actions="control"/>
+
+      <!-- necessary for uploading files -->
+      <permission type="java.io.FilePermission" name="../../../content/vi/bb_bb60/sessions/-" actions="write,delete"/>
+      <permission type="java.io.FilePermission" name="../../../content/vi/BBLEARN/sessions/-" actions="write,delete"/>
+
+      <!-- also needed for uploading, and creating files in the content system in general -->
+      <!-- the delete permission is necessary for deleting groups (and maybe other operations as well) -->
+      <permission type="java.io.FilePermission" name="../../../content/vi/bb_bb60/recyclebin/-" actions="write,delete"/>
+      <permission type="java.io.FilePermission" name="../../../content/vi/BBLEARN/recyclebin/-" actions="write,delete"/>
+
+      <!-- necessary when using EHCache -->
+      <permission type="java.io.FilePermission" name="../../../apps/tomcat/temp/-" actions="write,delete"/>
+      <permission type="javax.management.MBeanPermission"
+                  name="net.sf.ehcache.management.CacheStatistics"
+                  actions="unregisterMBean,registerMBean"/>
+
+      <!-- necessary in 9.1 SP9 for EHcache to work -->
+      <!-- also necessary when using JAXB -->
+      <permission type="java.lang.reflect.ReflectPermission" name="suppressAccessChecks"/>
+
+      <!-- EHcache needs this to shutdown a cache -->
+      <permission type="runtime" name="modifyThread"/>
+
+      <!-- sometimes(?!) needed to initialize the database ConnectionPool -->
+      <!-- also needed when using Apache Axis (webservices) -->
+      <permission type="runtime" name="getClassLoader" actions=""/>
+    </permissions>
+
+    <!-- required voor groovy code -->
+    <requires-bean-introspection value="true"/>
+  </plugin>
+</manifest>
